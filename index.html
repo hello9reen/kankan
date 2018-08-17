@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>kankan</title>
+  <style>
+    html, body { margin:0;padding:0;height:100%;width:100%;overflow:hidden }
+    header { border-bottom:1px solid #aaa;height:30px }
+    .knob { margin:0 0 0 200px;padding-top:5px }
+    .knob-item { background-color:#eee;border:1px solid #ccc;display:inline-block;height:20px;padding:5px 15px 0 }
+    .knob-item.active { background-color:#fff;border-bottom:none}
+    section { height:calc(100% - 30px) }
+    aside { float:left;width:200px }
+    .kankan {float:right;height:100%;position:relative;width:calc(100% - 200px) }
+    .kankan iframe { height:100%;overflow:auto;width:100% }
+    .kan-item { background-color:rgb(245,245,245);display:none;height:100%;margin: 10px 10px 0 }
+    .kan-item.active { display:block; }
+  </style>
+</head>
+<body>
+  <header>
+    <ul class="knob">
+    </ul>
+  </header>
+  <section>
+    <aside>
+        <p><a href="some1.html">HTML 은</a></p> 
+        <p><a href="some2.html">중요합니다!</a></p>  
+        <p><a href="some3.html">웹은 사라지지 않고</a></p>
+        <p><a href="some4.html">또, 웹은 HTML로</a></p>
+        <p><a href="some5.html">만들어지거든요.</a></p>
+      </aside>
+      <div class="kankan">
+      </div>      
+  </section>
+
+  <script>
+    (function ($) {
+      var queue = []
+      var knob = document.querySelector('.knob')
+      var kankan = document.querySelector('.kankan')
+      var links = document.querySelectorAll('aside a[href]')
+      var fn = function (e) {
+        e.preventDefault()
+
+        var li, div, iframe
+        var knobItems = knob.querySelectorAll('.knob-item')
+        var kanItems = kankan.querySelectorAll('.kan-item')
+        var href = e.target.getAttribute('href') || e.target.id
+        var exists = false
+
+        for (var i = 0; i < queue.length; i++) {
+          knobItems[i] && knobItems[i].classList.remove('active')
+          kanItems[i] && kanItems[i].classList.remove('active')
+
+          // 이미 열려 있군요.
+          if (queue[i] === href) {
+            knobItems[i] && knobItems[i].classList.add('active')
+            kanItems[i] && kanItems[i].classList.add('active')
+            exists = true
+          }
+        }
+
+        // 탭이 없으면 새로 만들어요.
+        if (!exists) {
+          queue.push(href)
+
+          li = document.createElement('li')
+          li.setAttribute('id', href)
+          li.classList.add('knob-item')
+          li.classList.add('active')
+          li.appendChild(document.createTextNode(e.target.textContent))
+          li.addEventListener('click', fn, false)
+          knob.appendChild(li)
+
+          iframe = document.createElement('iframe')
+          iframe.src = e.target.href
+          div = document.createElement('div')
+          div.classList.add('kan-item')
+          div.classList.add('active')
+          div.appendChild(iframe)
+          kankan.appendChild(div)
+        }
+      }
+
+      for (var i = 0; i < links.length; i++)
+        links[i].addEventListener('click', fn, false)
+    }())
+  </script>
+</body>
+</html>
